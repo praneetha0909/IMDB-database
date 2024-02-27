@@ -1,0 +1,696 @@
+QUERY 1.)
+---QUESTION---
+Calculate the average of the ratings (rounded to 4 decimal places) for the movies
+by genre for each year from 2017 to 2021 for each genre, Adventure, and Thriller.
+Should have 10 rows of output, for 5 years and 2 genres.
+YEAR GENRES YEARLY_AVG
+---------- --------- ----------
+2017 Adventure ???
+2017 Thriller ???
+. . .
+. . .
+. . .
+2021 Adventure ???
+2021 Thriller ???
+10 rows selected
+
+------------SQL QUERY----------------
+SELECT startyear AS YEAR, 'Adventure' AS genres, ROUND(AVG(averagerating), 4) AS YEARLY_AVG
+FROM imdb00.title_basics tb
+JOIN imdb00.title_ratings tr ON tb.tconst = tr.tconst
+WHERE startyear IN ( '2017', '2018', '2019', '2020', '2021' )
+    AND lower(genres) LIKE '%adventure%'
+AND lower(titletype) = 'movie'
+GROUP BY startyear
+UNION 
+SELECT startyear AS YEAR, 'Thriller' AS genres, ROUND(AVG(averagerating), 4) AS YEARLY_AVG
+FROM imdb00.title_basics tb
+JOIN imdb00.title_ratings tr ON tb.tconst = tr.tconst
+WHERE startyear IN ( '2017', '2018', '2019', '2020', '2021' )
+AND lower(titletype) = 'movie'
+    AND lower(genres) LIKE '%thriller%'
+GROUP BY startyear
+ORDER BY YEAR,genres;
+
+-------------OUTPUT------------------
+
+
+YEAR       GENRES    YEARLY_AVG
+---------- --------- ----------
+2017       Adventure     5.8838
+2017       Thriller       5.363
+2018       Adventure     5.8971
+2018       Thriller      5.4084
+2019       Adventure     5.9197
+2019       Thriller      5.3759
+2020       Adventure     5.8644
+2020       Thriller      5.2298
+2021       Adventure     6.0423
+2021       Thriller      5.6148
+
+10 rows selected.
+----------------------------------------------------------------------------------------------------------------------------------------
+
+QUERY 2.)
+---OUESTION---
+For each year from 2004 to 2018 and for the Drama and Romance genre
+combination, find out the lead actor/actress names with the highest average
+rating. In case, there are multiple actors/actresses with the same highest average
+rating, you need to display all of them.
+Should have at least 1 row for each year.
+YEAR GENRE HIGHEST_AVG_ACTORRATING MOST_POPULAR_ACTOR
+---------- ------------- ----------------------- -------------------
+2004 Drama,Romance ??? ???
+2005 Drama,Romance ??? ???
+. . . .
+. . . .
+. . . .
+2018 Drama,Romance ??? ???
+??? rows selected.
+
+------------SQL QUERY----------------
+SELECT tb.startyear AS YEAR, 'Drama,Romance' AS GENRE, ROUND(MAX(r.averagerating), 4) AS HIGHEST_AVG_ACTORRATING, nb.primaryname as MOST_POPULAR_ACTOR
+FROM imdb00.title_basics tb
+JOIN imdb00.title_ratings r ON tb.tconst = r.tconst
+JOIN imdb00.title_principals p ON tb.tconst = p.tconst
+JOIN imdb00.name_basics nb ON p.nconst = nb.nconst
+WHERE p.category IN ('actor', 'actress') AND tb.startyear BETWEEN 2004 AND 2018 AND tb.Genres LIKE '%Drama%' AND tb.Genres LIKE '%Romance%' AND p.category= 'actor' AND p.ordering <= 2 AND r.numvotes >= 80000 
+GROUP BY tb.startyear, tb.Genres, nb.primaryname
+HAVING MAX(r.averagerating) IS NOT NULL
+ORDER BY tb.startyear, tb.Genres ASC;
+
+-------------OUTPUT----------------------
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2004       Drama,Romance                     6.8
+Adam Sandler
+
+2004       Drama,Romance                     5.9
+Colin Firth
+
+2004       Drama,Romance                     6.7
+Emile Hirsch
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2004       Drama,Romance                     6.7
+Nicholas Downs
+
+2004       Drama,Romance                     7.5
+Paul Giamatti
+
+2004       Drama,Romance                     7.4
+Peter Sarsgaard
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2004       Drama,Romance                     7.5
+Thomas Haden Church
+
+2004       Drama,Romance                     7.4
+Tom Hanks
+
+2004       Drama,Romance                     7.4
+Zach Braff
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2004       Drama,Romance                     7.2
+Gerard Butler
+
+2004       Drama,Romance                     8.1
+Ethan Hawke
+
+2004       Drama,Romance                     7.8
+James Garner
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2004       Drama,Romance                     7.2
+Jude Law
+
+2004       Drama,Romance                     8.3
+Jim Carrey
+
+2005       Drama,Romance                       8
+Russell Crowe
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2005       Drama,Romance                     7.4
+Ralph Fiennes
+
+2005       Drama,Romance                     7.7
+Heath Ledger
+
+2005       Drama,Romance                     7.7
+Jake Gyllenhaal
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2005       Drama,Romance                     7.3
+Ken Watanabe
+
+2005       Drama,Romance                     7.8
+Matthew Macfadyen
+
+2005       Drama,Romance                     7.6
+Jonathan Rhys Meyers
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2006       Drama,Romance                     6.9
+Russell Crowe
+
+2006       Drama,Romance                     7.1
+Sean Biggerstaff
+
+2006       Drama,Romance                     5.8
+Vince Vaughn
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2006       Drama,Romance                     6.8
+Keanu Reeves
+
+2006       Drama,Romance                     7.2
+Hugh Jackman
+
+2006       Drama,Romance                     7.4
+Edward Norton
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2007       Drama,Romance                       7
+Gerard Butler
+
+2007       Drama,Romance                     7.3
+Ryan Gosling
+
+2007       Drama,Romance                     6.8
+Steve Carell
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2007       Drama,Romance                     7.8
+Glen Hansard
+
+2007       Drama,Romance                     7.8
+James McAvoy
+
+2008       Drama,Romance                     7.1
+Jason Segel
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2008       Drama,Romance                     7.1
+Ryan Reynolds
+
+2008       Drama,Romance                       8
+Dev Patel
+
+2008       Drama,Romance                     7.8
+Brad Pitt
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2008       Drama,Romance                     5.3
+Robert Pattinson
+
+2008       Drama,Romance                     6.2
+Robert Hoffman
+
+2008       Drama,Romance                     7.3
+Leonardo DiCaprio
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2008       Drama,Romance                     7.6
+Ralph Fiennes
+
+2009       Drama,Romance                     8.5
+Ed O'Neill
+
+2009       Drama,Romance                     7.4
+George Clooney
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2009       Drama,Romance                     6.8
+Jesse Eisenberg
+
+2009       Drama,Romance                     7.7
+Joseph Gordon-Levitt
+
+2009       Drama,Romance                     6.7
+Ryan Reynolds
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2009       Drama,Romance                     6.5
+Steve Martin
+
+2009       Drama,Romance                     7.8
+Jared Leto
+
+2009       Drama,Romance                     7.2
+Jeff Bridges
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2009       Drama,Romance                     8.2
+Ricardo Darin
+
+2009       Drama,Romance                     7.5
+Colin Firth
+
+2010       Drama,Romance                     6.4
+Scoot McNairy
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     7.9
+Shah Rukh Khan
+
+2010       Drama,Romance                     5.8
+Javier Bardem
+
+2010       Drama,Romance                     7.7
+Callan McAuliffe
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     7.2
+Christopher Plummer
+
+2010       Drama,Romance                     7.3
+Craig Roberts
+
+2010       Drama,Romance                     7.2
+Ewan McGregor
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     6.7
+Jake Gyllenhaal
+
+2010       Drama,Romance                     6.1
+Jason Bateman
+
+2010       Drama,Romance                     6.5
+Josh Duhamel
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     7.1
+Keir Gilchrist
+
+2010       Drama,Romance                     7.1
+Zach Galifianakis
+
+2010       Drama,Romance                     6.5
+Matt Damon
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     5.9
+Liam Hemsworth
+
+2010       Drama,Romance                     8.7
+Hugh Bonneville
+
+2010       Drama,Romance                     7.4
+Javier Bardem
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2010       Drama,Romance                     7.1
+Robert Pattinson
+
+2010       Drama,Romance                     7.4
+Ryan Gosling
+
+2011       Drama,Romance                     6.5
+Armie Hammer
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2011       Drama,Romance                     6.5
+Leonardo DiCaprio
+
+2011       Drama,Romance                     6.4
+Michael Fassbender
+
+2011       Drama,Romance                     7.2
+Bill Nighy
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2011       Drama,Romance                     7.9
+Jean Dujardin
+
+2011       Drama,Romance                     7.6
+Joseph Gordon-Levitt
+
+2011       Drama,Romance                     7.4
+Ryan Gosling
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2011       Drama,Romance                     7.6
+Seth Rogen
+
+2011       Drama,Romance                     7.4
+Steve Carell
+
+2011       Drama,Romance                       7
+Jim Sturgess
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2011       Drama,Romance                     7.3
+Michael Fassbender
+
+2011       Drama,Romance                     6.9
+Robert Pattinson
+
+2011       Drama,Romance                     6.9
+William Mapother
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2012       Drama,Romance                     7.7
+Bradley Cooper
+
+2012       Drama,Romance                     7.2
+Greg Kinnear
+
+2012       Drama,Romance                     7.8
+Jared Gilman
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2012       Drama,Romance                     6.2
+Jason Segel
+
+2012       Drama,Romance                     6.2
+Paul Rudd
+
+2012       Drama,Romance                     8.1
+Ranbir Kapoor
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2012       Drama,Romance                     7.5
+Hugh Jackman
+
+2012       Drama,Romance                     7.5
+Russell Crowe
+
+2012       Drama,Romance                     6.4
+Zac Efron
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2012       Drama,Romance                     6.8
+Channing Tatum
+
+2012       Drama,Romance                     6.6
+Jude Law
+
+2012       Drama,Romance                       8
+Logan Lerman
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2013       Drama,Romance                     6.5
+Joseph Gordon-Levitt
+
+2013       Drama,Romance                     7.9
+Ethan Hawke
+
+2013       Drama,Romance                     7.2
+Leonardo DiCaprio
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2013       Drama,Romance                     7.1
+Miles Teller
+
+2013       Drama,Romance                       8
+Joaquin Phoenix
+
+2013       Drama,Romance                     6.6
+Josh Duhamel
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2014       Drama,Romance                     7.7
+Eddie Redmayne
+
+2014       Drama,Romance                     8.4
+Sam Heughan
+
+2014       Drama,Romance                     7.3
+Michael Pitt
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2014       Drama,Romance                     7.3
+Steven Yeun
+
+2014       Drama,Romance                     7.7
+Ansel Elgort
+
+2014       Drama,Romance                     6.4
+Brenton Thwaites
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2014       Drama,Romance                     6.4
+Jeff Bridges
+
+2015       Drama,Romance                     7.1
+Eddie Redmayne
+
+2015       Drama,Romance                     6.2
+Bill Hader
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2015       Drama,Romance                     7.1
+Colin Farrell
+
+2015       Drama,Romance                       7
+Scott Eastwood
+
+2015       Drama,Romance                     7.2
+Michiel Huisman
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2015       Drama,Romance                     7.5
+Emory Cohen
+
+2015       Drama,Romance                     4.1
+Jamie Dornan
+
+2016       Drama,Romance                     7.1
+Brad Pitt
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2016       Drama,Romance                     7.3
+Adam Driver
+
+2016       Drama,Romance                     8.7
+Milo Ventimiglia
+
+2016       Drama,Romance                     6.7
+Edward Norton
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2016       Drama,Romance                     7.4
+Sam Claflin
+
+2016       Drama,Romance                     6.7
+Will Smith
+
+2016       Drama,Romance                       7
+Chris Pratt
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2016       Drama,Romance                     8.1
+Ha Jung-woo
+
+2017       Drama,Romance                     7.5
+Kumail Nanjiani
+
+2017       Drama,Romance                     7.8
+Armie Hammer
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2017       Drama,Romance                     7.4
+Daniel Day-Lewis
+
+2017       Drama,Romance                     4.5
+Jamie Dornan
+
+2017       Drama,Romance                     7.8
+Timothee Chalamet
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2018       Drama,Romance                     6.9
+Henry Golding
+
+2018       Drama,Romance                     7.5
+Nick Robinson
+
+2018       Drama,Romance                       7
+Noah Centineo
+
+
+YEAR       GENRE         HIGHEST_AVG_ACTORRATING
+---------- ------------- -----------------------
+MOST_POPULAR_ACTOR
+--------------------------------------------------------------------------------
+2018       Drama,Romance                     7.7
+Penn Badgley
+
+2018       Drama,Romance                     7.6
+Bradley Cooper
+
+
+131 rows selected.
